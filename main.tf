@@ -16,9 +16,9 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
 
     kafka {
       resources {
-        resources_preset_id = var.kafka_resources_preset_id
-        disk_size           = var.kafka_disk_size
-        disk_type_id        = var.kafka_disk_type_id
+        resource_preset_id = var.kafka_resource_preset_id
+        disk_size          = var.kafka_disk_size
+        disk_type_id       = var.kafka_disk_type_id
       }
 
       kafka_config {
@@ -29,9 +29,9 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
 
     zookeeper {
       resources {
-        resources_preset_id = var.zookeeper_resources_preset_id
-        disk_size           = var.zookeeper_disk_size
-        disk_type_id        = var.zookeeper_disk_type_id
+        resource_preset_id = var.zookeeper_resource_preset_id
+        disk_size          = var.zookeeper_disk_size
+        disk_type_id       = var.zookeeper_disk_type_id
       }
     }
 

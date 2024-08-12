@@ -66,7 +66,7 @@ variable "schema_registry" {
   default     = false
 }
 
-variable "kafka_resources_preset_id" {
+variable "kafka_resource_preset_id" {
   description = "The ID of the preset for computational resources available to a Kafka host"
   type        = string
 }
@@ -93,7 +93,7 @@ variable "kafka_log_flush_interval_messages" {
   default     = null
 }
 
-variable "zookeeper_resources_preset_id" {
+variable "zookeeper_resource_preset_id" {
   description = "The ID of the preset for computational resources available to a ZooKeeper host"
   type        = string
 }

@@ -47,7 +47,8 @@ module "kafka" {
   network_id = module.network.vpc_id
   subnet_ids = [
     module.network.private_subnets_ids[0],
-    module.network.private_subnets_ids[1]
+    module.network.private_subnets_ids[1],
+    module.network.private_subnets_ids[2]
   ]
   environment = "PRODUCTION"
 
@@ -63,16 +64,16 @@ module "kafka" {
   schema_registry  = true
 
   # Kafka Resources
-  kafka_resources_preset_id         = "s2.micro"
+  kafka_resource_preset_id          = "s2.micro"
   kafka_disk_size                   = 100
-  kafka_disk_type_id                = "network-hdd"
-  kafka_compression_type            = "gzip"
+  kafka_disk_type_id                = "network-ssd"
+  kafka_compression_type            = "COMPRESSION_TYPE_GZIP"
   kafka_log_flush_interval_messages = 1000
 
   # ZooKeeper Resources
-  zookeeper_resources_preset_id = "s2.micro"
-  zookeeper_disk_size           = 100
-  zookeeper_disk_type_id        = "network-hdd"
+  zookeeper_resource_preset_id = "s2.micro"
+  zookeeper_disk_size          = 100
+  zookeeper_disk_type_id       = "network-ssd"
 
   # Access and Security
   data_transfer_access = true
