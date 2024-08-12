@@ -77,7 +77,7 @@ module "kafka" {
 
   # Access and Security
   data_transfer_access = true
-  deletion_protection  = true
+  deletion_protection  = false
 
   # Maintenance Window
   maintenance_window_type = "WEEKLY"
