@@ -50,3 +50,42 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
     hour = var.maintenance_window_hour
   }
 }
+
+resource "yandex_mdb_kafka_topic" "kafka_topic" {
+  cluster_id         = yandex_mdb_kafka_cluster.kafka_cluster.id
+  name               = var.topic_name
+  partitions         = var.topic_partitions
+  replication_factor = var.topic_replication_factor
+
+  topic_config {
+    cleanup_policy        = var.topic_cleanup_policy
+    compression_type      = var.topic_compression_type
+    delete_retention_ms   = var.topic_delete_retention_ms
+    file_delete_delay_ms  = var.topic_file_delete_delay_ms
+    flush_messages        = var.topic_flush_messages
+    flush_ms              = var.topic_flush_ms
+    min_compaction_lag_ms = var.topic_min_compaction_lag_ms
+    retention_bytes       = var.topic_retention_bytes
+    retention_ms          = var.topic_retention_ms
+    max_message_bytes     = var.topic_max_message_bytes
+    min_insync_replicas   = var.topic_min_insync_replicas
+    segment_bytes         = var.topic_segment_bytes
+    preallocate           = var.topic_preallocate
+  }
+
+  depends_on = [yandex_mdb_kafka_cluster.kafka_cluster]
+}
+
+resource "yandex_mdb_kafka_user" "kafka_user" {
+  cluster_id = yandex_mdb_kafka_cluster.kafka_cluster.id
+  name       = var.user_name
+  password   = var.user_password
+
+  permission {
+    topic_name  = var.user_permission_topic_name
+    role        = var.user_permission_role
+    allow_hosts = var.user_permission_allow_hosts
+  }
+
+  depends_on = [yandex_mdb_kafka_cluster.kafka_cluster]
+}

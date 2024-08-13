@@ -84,6 +84,27 @@ module "kafka" {
   maintenance_window_day  = "MON"
   maintenance_window_hour = 3
 
+  topic_name                  = "my-topic"
+  topic_partitions            = 10
+  topic_replication_factor    = 3
+  topic_cleanup_policy        = "CLEANUP_POLICY_COMPACT_AND_DELETE"
+  topic_compression_type      = "COMPRESSION_TYPE_GZIP"
+  topic_delete_retention_ms   = 86400000
+  topic_file_delete_delay_ms  = 60000
+  topic_flush_messages        = 10000
+  topic_flush_ms              = 1000
+  topic_min_compaction_lag_ms = 3600000
+  topic_retention_bytes       = 1073741824
+  topic_retention_ms          = 604800000
+  topic_max_message_bytes     = 1048588
+  topic_min_insync_replicas   = 2
+  topic_segment_bytes         = 536870912
+
+  user_name                   = "my-user"
+  user_password               = "my-secret-password"
+  user_permission_topic_name  = "my-topic"
+  user_permission_role        = "ACCESS_ROLE_PRODUCER"
+  user_permission_allow_hosts = ["10.0.0.0/8"]
 
   depends_on = [module.iam_accounts, module.network]
 }
