@@ -149,121 +149,41 @@ variable "maintenance_window_hour" {
   default     = null
 }
 
-variable "topic_name" {
-  description = "The name of the topic"
-  type        = string
+variable "topics" {
+  description = "List of Kafka topics to create"
+  type = list(object({
+    name               = string
+    partitions         = number
+    replication_factor = number
+    config = object({
+      cleanup_policy        = string
+      compression_type      = string
+      delete_retention_ms   = number
+      file_delete_delay_ms  = number
+      flush_messages        = number
+      flush_ms              = number
+      min_compaction_lag_ms = number
+      retention_bytes       = number
+      retention_ms          = number
+      max_message_bytes     = number
+      min_insync_replicas   = number
+      segment_bytes         = number
+      preallocate           = bool
+    })
+  }))
+  default = []
 }
 
-variable "topic_partitions" {
-  description = "The number of the topic's partitions"
-  type        = number
-}
-
-variable "topic_replication_factor" {
-  description = "Amount of data copies (replicas) for the topic in the cluster"
-  type        = number
-}
-
-variable "topic_cleanup_policy" {
-  description = "Kafka topic cleanup policy"
-  type        = string
-  default     = null
-}
-
-variable "topic_compression_type" {
-  description = "Kafka topic compression type"
-  type        = string
-  default     = null
-}
-
-variable "topic_delete_retention_ms" {
-  description = "Kafka topic delete retention milliseconds"
-  type        = number
-  default     = null
-}
-
-variable "topic_file_delete_delay_ms" {
-  description = "Kafka topic file delete delay milliseconds"
-  type        = number
-  default     = null
-}
-
-variable "topic_flush_messages" {
-  description = "Kafka topic flush messages"
-  type        = number
-  default     = null
-}
-
-variable "topic_flush_ms" {
-  description = "Kafka topic flush milliseconds"
-  type        = number
-  default     = null
-}
-
-variable "topic_min_compaction_lag_ms" {
-  description = "Kafka topic min compaction lag milliseconds"
-  type        = number
-  default     = null
-}
-
-variable "topic_retention_bytes" {
-  description = "Kafka topic retention bytes"
-  type        = number
-  default     = null
-}
-
-variable "topic_retention_ms" {
-  description = "Kafka topic retention milliseconds"
-  type        = number
-  default     = null
-}
-
-variable "topic_max_message_bytes" {
-  description = "Kafka topic max message bytes"
-  type        = number
-  default     = null
-}
-
-variable "topic_min_insync_replicas" {
-  description = "Kafka topic min insync replicas"
-  type        = number
-  default     = null
-}
-
-variable "topic_segment_bytes" {
-  description = "Kafka topic segment bytes"
-  type        = number
-  default     = null
-}
-
-variable "topic_preallocate" {
-  description = "Kafka topic preallocate"
-  type        = bool
-  default     = false
-}
-
-variable "user_name" {
-  description = "The name of the user"
-  type        = string
-}
-
-variable "user_password" {
-  description = "The password of the user"
-  type        = string
-}
-
-variable "user_permission_topic_name" {
-  description = "The name of the topic that the permission grants access to"
-  type        = string
-}
-
-variable "user_permission_role" {
-  description = "The role type to grant to the topic"
-  type        = string
-}
-
-variable "user_permission_allow_hosts" {
-  description = "Set of hosts, to which this permission grants access to"
-  type        = list(string)
-  default     = []
+variable "users" {
+  description = "List of Kafka users to create"
+  type = list(object({
+    name     = string
+    password = string
+    permissions = list(object({
+      topic_name  = string
+      role        = string
+      allow_hosts = list(string)
+    }))
+  }))
+  default = []
 }
