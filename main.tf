@@ -40,8 +40,8 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
     }
   }
 
-  security_group_ids = var.security_group_ids
-  host_group_ids     = var.host_group_ids
+  security_group_ids  = var.security_group_ids
+  host_group_ids      = var.host_group_ids
   deletion_protection = var.deletion_protection
 
   maintenance_window {
