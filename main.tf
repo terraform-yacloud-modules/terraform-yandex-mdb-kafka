@@ -50,3 +50,61 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
     hour = var.maintenance_window_hour
   }
 }
+
+resource "yandex_mdb_kafka_topic" "kafka_topic" {
+  for_each = { for idx, topic in var.topics : idx => topic }
+
+  cluster_id         = yandex_mdb_kafka_cluster.kafka_cluster.id
+  name               = each.value.name
+  partitions         = each.value.partitions
+  replication_factor = each.value.replication_factor
+
+  topic_config {
+    cleanup_policy        = each.value.config.cleanup_policy
+    compression_type      = each.value.config.compression_type
+    delete_retention_ms   = each.value.config.delete_retention_ms
+    file_delete_delay_ms  = each.value.config.file_delete_delay_ms
+    flush_messages        = each.value.config.flush_messages
+    flush_ms              = each.value.config.flush_ms
+    min_compaction_lag_ms = each.value.config.min_compaction_lag_ms
+    retention_bytes       = each.value.config.retention_bytes
+    retention_ms          = each.value.config.retention_ms
+    max_message_bytes     = each.value.config.max_message_bytes
+    min_insync_replicas   = each.value.config.min_insync_replicas
+    segment_bytes         = each.value.config.segment_bytes
+    preallocate           = each.value.config.preallocate
+  }
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+
+  depends_on = [yandex_mdb_kafka_cluster.kafka_cluster]
+}
+
+resource "yandex_mdb_kafka_user" "kafka_user" {
+  for_each = { for idx, user in var.users : idx => user }
+
+  cluster_id = yandex_mdb_kafka_cluster.kafka_cluster.id
+  name       = each.value.name
+  password   = each.value.password
+
+  dynamic "permission" {
+    for_each = each.value.permissions
+    content {
+      topic_name  = permission.value.topic_name
+      role        = permission.value.role
+      allow_hosts = permission.value.allow_hosts
+    }
+  }
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+
+  depends_on = [yandex_mdb_kafka_topic.kafka_topic]
+}

@@ -148,3 +148,42 @@ variable "maintenance_window_hour" {
   type        = number
   default     = null
 }
+
+variable "topics" {
+  description = "List of Kafka topics to create"
+  type = list(object({
+    name               = string
+    partitions         = number
+    replication_factor = number
+    config = object({
+      cleanup_policy        = string
+      compression_type      = string
+      delete_retention_ms   = number
+      file_delete_delay_ms  = number
+      flush_messages        = number
+      flush_ms              = number
+      min_compaction_lag_ms = number
+      retention_bytes       = number
+      retention_ms          = number
+      max_message_bytes     = number
+      min_insync_replicas   = number
+      segment_bytes         = number
+      preallocate           = bool
+    })
+  }))
+  default = []
+}
+
+variable "users" {
+  description = "List of Kafka users to create"
+  type = list(object({
+    name     = string
+    password = string
+    permissions = list(object({
+      topic_name  = string
+      role        = string
+      allow_hosts = list(string)
+    }))
+  }))
+  default = []
+}
