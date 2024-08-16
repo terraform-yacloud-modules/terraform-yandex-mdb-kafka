@@ -76,8 +76,8 @@ module "kafka" {
   zookeeper_disk_type_id       = "network-ssd"
 
   # Access and Security
-  data_transfer_access = true
-  deletion_protection  = false
+  data_transfer_access    = true
+  deletion_protection     = false
   maintenance_window_type = "ANYTIME"
 
   topics = [
