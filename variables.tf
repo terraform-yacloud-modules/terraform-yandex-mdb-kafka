@@ -150,26 +150,50 @@ variable "maintenance_window_hour" {
 }
 
 variable "topics" {
-  description = "List of Kafka topics to create"
+  description = <<EOF
+    (Required) This is a list of Kafka topics to create.
+
+    Required values:
+      - name               - The name of the topic.
+      - partitions         - The number of partitions for the topic.
+      - replication_factor - The replication factor for the topic.
+
+    Optional values:
+      - config             - Configuration settings for the topic. The list is documented below.
+        - cleanup_policy        - (Optional) The cleanup policy for the topic. Allowed values: `CLEANUP_POLICY_DELETE`, `CLEANUP_POLICY_COMPACT`, `CLEANUP_POLICY_COMPACT_AND_DELETE`.
+        - compression_type      - (Optional) The compression type for the topic. Allowed values: `COMPRESSION_TYPE_SNAPPY`, `COMPRESSION_TYPE_GZIP`, `COMPRESSION_TYPE_PRODUCER`, `COMPRESSION_TYPE_UNCOMPRESSED`, `COMPRESSION_TYPE_ZSTD`, `COMPRESSION_TYPE_LZ4`.
+        - delete_retention_ms   - (Optional) The time to retain delete tombstone markers for log compacted topics.
+        - file_delete_delay_ms  - (Optional) The time to wait before deleting a file from the filesystem.
+        - flush_messages        - (Optional) The number of messages accumulated on a log partition before messages are flushed to disk.
+        - flush_ms              - (Optional) The maximum time in milliseconds that a message in any topic is kept in memory before flushed to disk.
+        - min_compaction_lag_ms - (Optional) The minimum time a message will remain uncompacted in the log.
+        - retention_bytes       - (Optional) The maximum size a partition can grow to before Kafka will discard old log segments to free up space.
+        - retention_ms          - (Optional) The maximum time Kafka will retain messages in a topic.
+        - max_message_bytes     - (Optional) The largest record batch size allowed by Kafka.
+        - min_insync_replicas   - (Optional) The minimum number of replicas that must acknowledge a write for the write to be considered successful.
+        - segment_bytes         - (Optional) The maximum size of a single log file.
+        - preallocate           - (Optional) Whether to preallocate the file on disk.
+  EOF
+
   type = list(object({
     name               = string
     partitions         = number
     replication_factor = number
-    config = object({
-      cleanup_policy        = string
-      compression_type      = string
-      delete_retention_ms   = number
-      file_delete_delay_ms  = number
-      flush_messages        = number
-      flush_ms              = number
-      min_compaction_lag_ms = number
-      retention_bytes       = number
-      retention_ms          = number
-      max_message_bytes     = number
-      min_insync_replicas   = number
-      segment_bytes         = number
-      preallocate           = bool
-    })
+    config = optional(object({
+      cleanup_policy        = optional(string, "CLEANUP_POLICY_DELETE")
+      compression_type      = optional(string, "COMPRESSION_TYPE_PRODUCER")
+      delete_retention_ms   = optional(number, 86400000)
+      file_delete_delay_ms  = optional(number, 60000)
+      flush_messages        = optional(number, 9223372036854775807)
+      flush_ms              = optional(number, 9223372036854775807)
+      min_compaction_lag_ms = optional(number, 0)
+      retention_bytes       = optional(number, -1)
+      retention_ms          = optional(number, 604800000)
+      max_message_bytes     = optional(number, 1048588)
+      min_insync_replicas   = optional(number, 1)
+      segment_bytes         = optional(number, 1073741824)
+      preallocate           = optional(bool, false)
+    }), null)
   }))
   default = []
 }

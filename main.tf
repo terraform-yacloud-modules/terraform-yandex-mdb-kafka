@@ -59,20 +59,23 @@ resource "yandex_mdb_kafka_topic" "kafka_topic" {
   partitions         = each.value.partitions
   replication_factor = each.value.replication_factor
 
-  topic_config {
-    cleanup_policy        = each.value.config.cleanup_policy
-    compression_type      = each.value.config.compression_type
-    delete_retention_ms   = each.value.config.delete_retention_ms
-    file_delete_delay_ms  = each.value.config.file_delete_delay_ms
-    flush_messages        = each.value.config.flush_messages
-    flush_ms              = each.value.config.flush_ms
-    min_compaction_lag_ms = each.value.config.min_compaction_lag_ms
-    retention_bytes       = each.value.config.retention_bytes
-    retention_ms          = each.value.config.retention_ms
-    max_message_bytes     = each.value.config.max_message_bytes
-    min_insync_replicas   = each.value.config.min_insync_replicas
-    segment_bytes         = each.value.config.segment_bytes
-    preallocate           = each.value.config.preallocate
+  dynamic "topic_config" {
+    for_each = each.value.config == null ? [] : [each.value.config]
+    content {
+      cleanup_policy        = topic_config.value.cleanup_policy
+      compression_type      = topic_config.value.compression_type
+      delete_retention_ms   = topic_config.value.delete_retention_ms
+      file_delete_delay_ms  = topic_config.value.file_delete_delay_ms
+      flush_messages        = topic_config.value.flush_messages
+      flush_ms              = topic_config.value.flush_ms
+      min_compaction_lag_ms = topic_config.value.min_compaction_lag_ms
+      retention_bytes       = topic_config.value.retention_bytes
+      retention_ms          = topic_config.value.retention_ms
+      max_message_bytes     = topic_config.value.max_message_bytes
+      min_insync_replicas   = topic_config.value.min_insync_replicas
+      segment_bytes         = topic_config.value.segment_bytes
+      preallocate           = topic_config.value.preallocate
+    }
   }
 
   timeouts {
