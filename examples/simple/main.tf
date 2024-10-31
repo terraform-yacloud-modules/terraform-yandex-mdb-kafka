@@ -26,7 +26,7 @@ module "network" {
 
   azs = ["ru-central1-a", "ru-central1-b", "ru-central1-d"]
 
-  private_subnets = [["10.3.0.0/24"], ["10.4.0.0/24"], ["10.5.0.0/24"]]
+  public_subnets = [["10.3.0.0/24"], ["10.4.0.0/24"], ["10.5.0.0/24"]]
 
   create_vpc         = true
   create_nat_gateway = true
@@ -46,9 +46,9 @@ module "kafka" {
   }
   network_id = module.network.vpc_id
   subnet_ids = [
-    module.network.private_subnets_ids[0],
-    module.network.private_subnets_ids[1],
-    module.network.private_subnets_ids[2]
+    module.network.public_subnets_ids[0],
+    module.network.public_subnets_ids[1],
+    module.network.public_subnets_ids[2]
   ]
   environment = "PRODUCTION"
 
@@ -83,44 +83,44 @@ module "kafka" {
   topics = [
     {
       name               = "topic1"
-      partitions         = 6
+      partitions         = 2
       replication_factor = 2
       config = {
         cleanup_policy        = "CLEANUP_POLICY_DELETE"
-        compression_type      = "COMPRESSION_TYPE_LZ4"
+        compression_type      = "COMPRESSION_TYPE_PRODUCER"
         delete_retention_ms   = 86400000
         file_delete_delay_ms  = 60000
-        flush_messages        = 128
-        flush_ms              = 1000
+        flush_messages        = 9223372036854775807
+        flush_ms              = 9223372036854775807
         min_compaction_lag_ms = 0
-        retention_bytes       = 10737418240
+        retention_bytes       = -1
         retention_ms          = 604800000
         max_message_bytes     = 1048588
         min_insync_replicas   = 1
-        segment_bytes         = 268435456
+        segment_bytes         = 1073741824
         preallocate           = false
       }
     },
     {
       name               = "topic2"
-      partitions         = 4
-      replication_factor = 2
+      partitions         = 3
+      replication_factor = 3
       config = {
-        cleanup_policy        = "CLEANUP_POLICY_DELETE"
-        compression_type      = "COMPRESSION_TYPE_LZ4"
-        delete_retention_ms   = 86400000
-        file_delete_delay_ms  = 60000
-        flush_messages        = 128
-        flush_ms              = 1000
-        min_compaction_lag_ms = 0
-        retention_bytes       = 10737418240
-        retention_ms          = 604800000
-        max_message_bytes     = 1048588
-        min_insync_replicas   = 1
-        segment_bytes         = 268435456
-        preallocate           = false
+        cleanup_policy        = "CLEANUP_POLICY_COMPACT"
+        compression_type      = "COMPRESSION_TYPE_GZIP"
+        delete_retention_ms   = 43200000
+        file_delete_delay_ms  = 30000
+        flush_messages        = 4611686018427387904
+        flush_ms              = 4611686018427387904
+        min_compaction_lag_ms = 1000
+        retention_bytes       = 1073741824
+        retention_ms          = 302400000
+        max_message_bytes     = 2097152
+        min_insync_replicas   = 2
+        segment_bytes         = 2147483648
+        preallocate           = true
       }
-    }
+    },
   ]
 
   users = [
@@ -134,7 +134,7 @@ module "kafka" {
           allow_hosts = ["*"]
         },
         {
-          topic_name  = "topic2"
+          topic_name  = "topic1"
           role        = "ACCESS_ROLE_PRODUCER"
           allow_hosts = ["*"]
         }
@@ -145,7 +145,7 @@ module "kafka" {
       password = "password2"
       permissions = [
         {
-          topic_name  = "topic1"
+          topic_name  = "topic2"
           role        = "ACCESS_ROLE_PRODUCER"
           allow_hosts = ["*"]
         },
