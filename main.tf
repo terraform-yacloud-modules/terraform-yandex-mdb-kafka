@@ -28,7 +28,7 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
     }
 
     dynamic "zookeeper" {
-      for_each = var.kafka_version < "3.5" ? [1] : []
+      for_each = var.kafka_version < "3.6" ? [1] : []
       content {
         resources {
           resource_preset_id = var.zookeeper_resource_preset_id
