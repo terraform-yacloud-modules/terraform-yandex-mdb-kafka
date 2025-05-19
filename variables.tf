@@ -39,8 +39,12 @@ variable "environment" {
 }
 
 variable "kafka_version" {
-  description = "Version of the Kafka server software"
+  description = "Version of the Kafka server"
   type        = string
+  validation {
+    condition     = contains(["3.4", "3.5", "3.6"], var.kafka_version)
+    error_message = "The Kafka server version must be 3.4, 3.5, 3.6"
+  }
 }
 
 variable "brokers_count" {
