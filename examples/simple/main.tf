@@ -53,7 +53,7 @@ module "kafka" {
   environment = "PRODUCTION"
 
   # Kafka Version and Configuration
-  kafka_version = "2.8"
+  kafka_version = "3.4"
   brokers_count = 3
   zones = [
     "ru-central1-a",
