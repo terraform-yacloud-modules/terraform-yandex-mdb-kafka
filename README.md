@@ -10,7 +10,7 @@ to give users references for how to use the module(s) as well as testing/validat
 module. If contributing to the project, please be sure to make any appropriate updates to the relevant examples to allow
 maintainers to test your changes and to keep the examples up to date for users. Thank you!
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -79,7 +79,7 @@ No modules.
 | <a name="output_kafka_cluster_id"></a> [kafka\_cluster\_id](#output\_kafka\_cluster\_id) | ID of the Kafka cluster |
 | <a name="output_kafka_topic_ids"></a> [kafka\_topic\_ids](#output\_kafka\_topic\_ids) | IDs of the Kafka topics |
 | <a name="output_kafka_user_ids"></a> [kafka\_user\_ids](#output\_kafka\_user\_ids) | IDs of the Kafka users |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## License
 
