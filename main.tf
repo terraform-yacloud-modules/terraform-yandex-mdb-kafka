@@ -49,6 +49,16 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
     day  = var.maintenance_window_day
     hour = var.maintenance_window_hour
   }
+
+  dynamic "timeouts" {
+    for_each = var.timeouts == null ? [] : [var.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
+  }
+
 }
 
 resource "yandex_mdb_kafka_topic" "kafka_topic" {
@@ -78,10 +88,13 @@ resource "yandex_mdb_kafka_topic" "kafka_topic" {
     }
   }
 
-  timeouts {
-    create = "30m"
-    update = "30m"
-    delete = "30m"
+  dynamic "timeouts" {
+    for_each = var.timeouts == null ? [] : [var.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
   }
 
   depends_on = [yandex_mdb_kafka_cluster.kafka_cluster]
@@ -103,10 +116,13 @@ resource "yandex_mdb_kafka_user" "kafka_user" {
     }
   }
 
-  timeouts {
-    create = "30m"
-    update = "30m"
-    delete = "30m"
+  dynamic "timeouts" {
+    for_each = var.timeouts == null ? [] : [var.timeouts]
+    content {
+      create = try(timeouts.value.create, null)
+      update = try(timeouts.value.update, null)
+      delete = try(timeouts.value.delete, null)
+    }
   }
 
   depends_on = [yandex_mdb_kafka_topic.kafka_topic]

@@ -42,8 +42,8 @@ variable "kafka_version" {
   description = "Version of the Kafka server"
   type        = string
   validation {
-    condition     = contains(["3.4", "3.5", "3.6"], var.kafka_version)
-    error_message = "The Kafka server version must be 3.4, 3.5, 3.6"
+    condition     = contains(["3.6", "3.7", "3.8", "3.9"], var.kafka_version)
+    error_message = "The Kafka server version must be 3.6, 3.7, 3.8, 3.9"
   }
 }
 
@@ -214,4 +214,15 @@ variable "users" {
     }))
   }))
   default = []
+}
+
+
+variable "timeouts" {
+  description = "Timeout settings for cluster operations"
+  type = object({
+    create = optional(string, "30m")
+    update = optional(string, "30m")
+    delete = optional(string, "30m")
+  })
+  default = null
 }
