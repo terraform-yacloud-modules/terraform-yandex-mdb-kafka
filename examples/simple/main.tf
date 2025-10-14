@@ -53,7 +53,7 @@ module "kafka" {
   environment = "PRODUCTION"
 
   # Kafka Version and Configuration
-  kafka_version = "3.4"
+  kafka_version = "3.6"
   brokers_count = 3
   zones = [
     "ru-central1-a",
@@ -144,4 +144,11 @@ module "kafka" {
   ]
 
   depends_on = [module.iam_accounts, module.network]
+
+  timeouts = {
+    create = "40m"
+    update = "40m"
+    delete = "40m"
+  }
+
 }
