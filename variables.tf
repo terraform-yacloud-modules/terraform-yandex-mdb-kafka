@@ -97,6 +97,130 @@ variable "kafka_log_flush_interval_messages" {
   default     = null
 }
 
+variable "kafka_log_flush_interval_ms" {
+  description = "Kafka server log flush interval milliseconds"
+  type        = number
+  default     = null
+}
+
+variable "kafka_log_flush_scheduler_interval_ms" {
+  description = "Kafka server log flush scheduler interval milliseconds"
+  type        = number
+  default     = null
+}
+
+variable "kafka_log_retention_bytes" {
+  description = "Kafka server log retention bytes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_log_retention_hours" {
+  description = "Kafka server log retention hours"
+  type        = number
+  default     = null
+}
+
+variable "kafka_log_retention_minutes" {
+  description = "Kafka server log retention minutes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_log_retention_ms" {
+  description = "Kafka server log retention milliseconds"
+  type        = number
+  default     = null
+}
+
+variable "kafka_log_segment_bytes" {
+  description = "Kafka server log segment bytes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_num_partitions" {
+  description = "Kafka server number of partitions"
+  type        = number
+  default     = null
+}
+
+variable "kafka_default_replication_factor" {
+  description = "Kafka server default replication factor"
+  type        = number
+  default     = null
+}
+
+variable "kafka_message_max_bytes" {
+  description = "Kafka server message max bytes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_replica_fetch_max_bytes" {
+  description = "Kafka server replica fetch max bytes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_ssl_cipher_suites" {
+  description = "Kafka server SSL cipher suites"
+  type        = list(string)
+  default     = null
+}
+
+variable "kafka_offsets_retention_minutes" {
+  description = "Kafka server offsets retention minutes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_sasl_enabled_mechanisms" {
+  description = "Kafka server SASL enabled mechanisms"
+  type        = list(string)
+  default     = null
+}
+
+variable "kraft_resource_preset_id" {
+  description = "The ID of the preset for computational resources available to a KRaft host"
+  type        = string
+  default     = null
+}
+
+variable "kraft_disk_size" {
+  description = "Volume of the storage available to a KRaft host, in gigabytes"
+  type        = number
+  default     = null
+}
+
+variable "kraft_disk_type_id" {
+  description = "Type of the storage of KRaft hosts"
+  type        = string
+  default     = null
+}
+
+variable "rest_api_enabled" {
+  description = "Enable REST API for Kafka cluster"
+  type        = bool
+  default     = false
+}
+
+variable "kafka_ui_enabled" {
+  description = "Enable Kafka UI for cluster"
+  type        = bool
+  default     = false
+}
+
+variable "disk_size_autoscaling" {
+  description = "Disk size autoscaling configuration"
+  type = object({
+    disk_size_limit           = number
+    planned_usage_threshold   = optional(number)
+    emergency_usage_threshold = optional(number)
+  })
+  default = null
+}
+
 variable "zookeeper_resource_preset_id" {
   description = "The ID of the preset for computational resources available to a ZooKeeper host"
   type        = string

@@ -22,8 +22,22 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
       }
 
       kafka_config {
-        compression_type            = var.kafka_compression_type
-        log_flush_interval_messages = var.kafka_log_flush_interval_messages
+        compression_type                = var.kafka_compression_type
+        log_flush_interval_messages     = var.kafka_log_flush_interval_messages
+        log_flush_interval_ms           = var.kafka_log_flush_interval_ms
+        log_flush_scheduler_interval_ms = var.kafka_log_flush_scheduler_interval_ms
+        log_retention_bytes             = var.kafka_log_retention_bytes
+        log_retention_hours             = var.kafka_log_retention_hours
+        log_retention_minutes           = var.kafka_log_retention_minutes
+        log_retention_ms                = var.kafka_log_retention_ms
+        log_segment_bytes               = var.kafka_log_segment_bytes
+        num_partitions                  = var.kafka_num_partitions
+        default_replication_factor      = var.kafka_default_replication_factor
+        message_max_bytes               = var.kafka_message_max_bytes
+        replica_fetch_max_bytes         = var.kafka_replica_fetch_max_bytes
+        ssl_cipher_suites               = var.kafka_ssl_cipher_suites
+        offsets_retention_minutes       = var.kafka_offsets_retention_minutes
+        sasl_enabled_mechanisms         = var.kafka_sasl_enabled_mechanisms
       }
     }
 
@@ -32,6 +46,34 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
         resource_preset_id = var.zookeeper_resource_preset_id
         disk_size          = var.zookeeper_disk_size
         disk_type_id       = var.zookeeper_disk_type_id
+      }
+    }
+
+    dynamic "kraft" {
+      for_each = var.kraft_resource_preset_id != null || var.kraft_disk_size != null || var.kraft_disk_type_id != null ? [1] : []
+      content {
+        resources {
+          resource_preset_id = var.kraft_resource_preset_id
+          disk_size          = var.kraft_disk_size
+          disk_type_id       = var.kraft_disk_type_id
+        }
+      }
+    }
+
+    rest_api {
+      enabled = var.rest_api_enabled
+    }
+
+    kafka_ui {
+      enabled = var.kafka_ui_enabled
+    }
+
+    dynamic "disk_size_autoscaling" {
+      for_each = var.disk_size_autoscaling == null ? [] : [var.disk_size_autoscaling]
+      content {
+        disk_size_limit           = disk_size_autoscaling.value.disk_size_limit
+        planned_usage_threshold   = disk_size_autoscaling.value.planned_usage_threshold
+        emergency_usage_threshold = disk_size_autoscaling.value.emergency_usage_threshold
       }
     }
 
@@ -119,9 +161,9 @@ resource "yandex_mdb_kafka_user" "kafka_user" {
   dynamic "timeouts" {
     for_each = var.timeouts == null ? [] : [var.timeouts]
     content {
-      create = try(timeouts.value.create, null)
-      update = try(timeouts.value.update, null)
-      delete = try(timeouts.value.delete, null)
+      create = timeouts.value.create
+      update = timeouts.value.update
+      delete = timeouts.value.delete
     }
   }
 
