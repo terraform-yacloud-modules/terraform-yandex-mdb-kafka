@@ -41,11 +41,14 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
       }
     }
 
-    zookeeper {
-      resources {
-        resource_preset_id = var.zookeeper_resource_preset_id
-        disk_size          = var.zookeeper_disk_size
-        disk_type_id       = var.zookeeper_disk_type_id
+    dynamic "zookeeper" {
+      for_each = var.zookeeper_resource_preset_id != null || var.zookeeper_disk_size != null || var.zookeeper_disk_type_id != null ? [1] : []
+      content {
+        resources {
+          resource_preset_id = var.zookeeper_resource_preset_id
+          disk_size          = var.zookeeper_disk_size
+          disk_type_id       = var.zookeeper_disk_type_id
+        }
       }
     }
 

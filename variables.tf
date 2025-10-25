@@ -224,16 +224,19 @@ variable "disk_size_autoscaling" {
 variable "zookeeper_resource_preset_id" {
   description = "The ID of the preset for computational resources available to a ZooKeeper host"
   type        = string
+  default     = null
 }
 
 variable "zookeeper_disk_size" {
   description = "Volume of the storage available to a ZooKeeper host, in gigabytes"
   type        = number
+  default     = null
 }
 
 variable "zookeeper_disk_type_id" {
   description = "Type of the storage of ZooKeeper hosts"
   type        = string
+  default     = null
 }
 
 variable "data_transfer_access" {

@@ -76,15 +76,10 @@ module "kafka" {
   kafka_message_max_bytes           = 1048576
   kafka_sasl_enabled_mechanisms     = ["SASL_MECHANISM_SCRAM_SHA_512"]
 
-  # KRaft Resources (если используется)
-  kraft_resource_preset_id = null
-  kraft_disk_size          = null
-  kraft_disk_type_id       = null
-
-  # ZooKeeper Resources
-  zookeeper_resource_preset_id = "s2.micro"
-  zookeeper_disk_size          = 100
-  zookeeper_disk_type_id       = "network-ssd"
+  # KRaft Resources (используется вместо ZooKeeper)
+  kraft_resource_preset_id = "s2.micro"
+  kraft_disk_size          = 100
+  kraft_disk_type_id       = "network-ssd"
 
   # Access and Security
   security_group_ids      = []
