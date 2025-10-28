@@ -107,7 +107,7 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
 }
 
 resource "yandex_mdb_kafka_topic" "kafka_topic" {
-  for_each = { for idx, topic in var.topics : idx => topic }
+  for_each = { for topic in var.topics : topic.name => topic }
 
   cluster_id         = yandex_mdb_kafka_cluster.kafka_cluster.id
   name               = each.value.name
@@ -146,7 +146,7 @@ resource "yandex_mdb_kafka_topic" "kafka_topic" {
 }
 
 resource "yandex_mdb_kafka_user" "kafka_user" {
-  for_each = { for idx, user in var.users : idx => user }
+  for_each = { for user in var.users : user.name => user }
 
   cluster_id = yandex_mdb_kafka_cluster.kafka_cluster.id
   name       = each.value.name
