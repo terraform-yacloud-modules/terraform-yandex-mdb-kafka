@@ -51,6 +51,10 @@ variable "brokers_count" {
   description = "Count of brokers per availability zone"
   type        = number
   default     = 1
+  validation {
+    condition     = var.brokers_count >= 1
+    error_message = "Brokers count must be at least 1"
+  }
 }
 
 variable "zones" {
@@ -78,6 +82,10 @@ variable "kafka_resource_preset_id" {
 variable "kafka_disk_size" {
   description = "Volume of the storage available to a Kafka host, in gigabytes"
   type        = number
+  validation {
+    condition     = var.kafka_disk_size >= 10
+    error_message = "Kafka disk size must be at least 10GB"
+  }
 }
 
 variable "kafka_disk_type_id" {
@@ -191,6 +199,10 @@ variable "kraft_disk_size" {
   description = "Volume of the storage available to a KRaft host, in gigabytes"
   type        = number
   default     = null
+  validation {
+    condition     = var.kraft_disk_size == null || var.kraft_disk_size >= 10
+    error_message = "KRaft disk size must be at least 10GB if specified"
+  }
 }
 
 variable "kraft_disk_type_id" {
@@ -219,6 +231,14 @@ variable "disk_size_autoscaling" {
     emergency_usage_threshold = optional(number)
   })
   default = null
+  validation {
+    condition = var.disk_size_autoscaling == null || (
+      var.disk_size_autoscaling.disk_size_limit >= 10 &&
+      (var.disk_size_autoscaling.planned_usage_threshold == null || (var.disk_size_autoscaling.planned_usage_threshold >= 0 && var.disk_size_autoscaling.planned_usage_threshold <= 100)) &&
+      (var.disk_size_autoscaling.emergency_usage_threshold == null || (var.disk_size_autoscaling.emergency_usage_threshold >= 0 && var.disk_size_autoscaling.emergency_usage_threshold <= 100))
+    )
+    error_message = "Disk size autoscaling validation failed: disk_size_limit must be >= 10GB, thresholds must be between 0 and 100"
+  }
 }
 
 variable "zookeeper_resource_preset_id" {
@@ -272,12 +292,20 @@ variable "maintenance_window_day" {
   description = "Day of the week for maintenance window"
   type        = string
   default     = null
+  validation {
+    condition     = var.maintenance_window_day == null || contains(["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"], var.maintenance_window_day)
+    error_message = "Maintenance window day must be one of: MON, TUE, WED, THU, FRI, SAT, SUN"
+  }
 }
 
 variable "maintenance_window_hour" {
   description = "Hour of the day in UTC for maintenance window"
   type        = number
   default     = null
+  validation {
+    condition     = var.maintenance_window_hour == null || (var.maintenance_window_hour >= 0 && var.maintenance_window_hour <= 23)
+    error_message = "Maintenance window hour must be between 0 and 23"
+  }
 }
 
 variable "topics" {
