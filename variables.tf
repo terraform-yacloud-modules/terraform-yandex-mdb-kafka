@@ -43,7 +43,7 @@ variable "kafka_version" {
   type        = string
   validation {
     condition     = contains(["3.6", "3.7", "3.8", "3.9"], var.kafka_version)
-    error_message = "The Kafka server version must be 3.6, 3.7, 3.8, 3.9"
+    error_message = "The Kafka server version must be one of: 3.6, 3.7, 3.8, 3.9"
   }
 }
 
@@ -52,8 +52,8 @@ variable "brokers_count" {
   type        = number
   default     = 1
   validation {
-    condition     = var.brokers_count >= 1
-    error_message = "Brokers count must be at least 1"
+    condition     = var.brokers_count >= 1 && var.brokers_count <= 10
+    error_message = "Brokers count must be between 1 and 10 per zone"
   }
 }
 
@@ -83,8 +83,8 @@ variable "kafka_disk_size" {
   description = "Volume of the storage available to a Kafka host, in gigabytes"
   type        = number
   validation {
-    condition     = var.kafka_disk_size >= 10
-    error_message = "Kafka disk size must be at least 10GB"
+    condition     = var.kafka_disk_size >= 10 && var.kafka_disk_size <= 4096
+    error_message = "Kafka disk size must be between 10GB and 4096GB"
   }
 }
 
