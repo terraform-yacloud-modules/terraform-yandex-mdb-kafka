@@ -71,6 +71,7 @@ module "kafka" {
   kafka_log_flush_interval_messages = 1000
   kafka_log_flush_interval_ms       = 1000
   kafka_log_segment_bytes           = 104857600
+  kafka_log_preallocate             = true
   kafka_num_partitions              = 100
   kafka_default_replication_factor  = 2
   kafka_message_max_bytes           = 1048576
@@ -119,7 +120,7 @@ module "kafka" {
         max_message_bytes     = 1048588
         min_insync_replicas   = 1
         segment_bytes         = 1073741824
-        preallocate           = false
+        preallocate           = true
       }
     },
     {

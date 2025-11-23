@@ -147,6 +147,12 @@ variable "kafka_log_segment_bytes" {
   default     = null
 }
 
+variable "kafka_log_preallocate" {
+  description = "Should pre allocate file when create new segment?"
+  type        = bool
+  default     = false
+}
+
 variable "kafka_num_partitions" {
   description = "Kafka server number of partitions"
   type        = number
