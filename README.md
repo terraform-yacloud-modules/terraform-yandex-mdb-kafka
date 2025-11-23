@@ -57,6 +57,7 @@ No modules.
 | <a name="input_kafka_log_flush_interval_messages"></a> [kafka\_log\_flush\_interval\_messages](#input\_kafka\_log\_flush\_interval\_messages) | Kafka server log flush interval messages | `number` | `null` | no |
 | <a name="input_kafka_log_flush_interval_ms"></a> [kafka\_log\_flush\_interval\_ms](#input\_kafka\_log\_flush\_interval\_ms) | Kafka server log flush interval milliseconds | `number` | `null` | no |
 | <a name="input_kafka_log_flush_scheduler_interval_ms"></a> [kafka\_log\_flush\_scheduler\_interval\_ms](#input\_kafka\_log\_flush\_scheduler\_interval\_ms) | Kafka server log flush scheduler interval milliseconds | `number` | `null` | no |
+| <a name="input_kafka_log_preallocate"></a> [kafka\_log\_preallocate](#input\_kafka\_log\_preallocate) | Should pre allocate file when create new segment? | `bool` | `false` | no |
 | <a name="input_kafka_log_retention_bytes"></a> [kafka\_log\_retention\_bytes](#input\_kafka\_log\_retention\_bytes) | Kafka server log retention bytes | `number` | `null` | no |
 | <a name="input_kafka_log_retention_hours"></a> [kafka\_log\_retention\_hours](#input\_kafka\_log\_retention\_hours) | Kafka server log retention hours | `number` | `null` | no |
 | <a name="input_kafka_log_retention_minutes"></a> [kafka\_log\_retention\_minutes](#input\_kafka\_log\_retention\_minutes) | Kafka server log retention minutes | `number` | `null` | no |

@@ -31,6 +31,7 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
         log_retention_minutes           = var.kafka_log_retention_minutes
         log_retention_ms                = var.kafka_log_retention_ms
         log_segment_bytes               = var.kafka_log_segment_bytes
+        log_preallocate                 = var.kafka_log_preallocate
         num_partitions                  = var.kafka_num_partitions
         default_replication_factor      = var.kafka_default_replication_factor
         message_max_bytes               = var.kafka_message_max_bytes
