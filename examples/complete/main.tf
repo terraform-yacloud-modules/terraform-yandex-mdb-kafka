@@ -64,18 +64,26 @@ module "kafka" {
   schema_registry  = true
 
   # Kafka Resources
-  kafka_resource_preset_id          = "s2.micro"
-  kafka_disk_size                   = 100
-  kafka_disk_type_id                = "network-ssd"
-  kafka_compression_type            = "COMPRESSION_TYPE_GZIP"
-  kafka_log_flush_interval_messages = 1000
-  kafka_log_flush_interval_ms       = 1000
-  kafka_log_segment_bytes           = 104857600
-  kafka_log_preallocate             = true
-  kafka_num_partitions              = 100
-  kafka_default_replication_factor  = 2
-  kafka_message_max_bytes           = 1048576
-  kafka_sasl_enabled_mechanisms     = ["SASL_MECHANISM_SCRAM_SHA_512"]
+  kafka_resource_preset_id              = "s2.micro"
+  kafka_disk_size                       = 100
+  kafka_disk_type_id                    = "network-ssd"
+  kafka_compression_type                = "COMPRESSION_TYPE_GZIP"
+  kafka_log_flush_interval_messages     = 1000
+  kafka_log_flush_interval_ms           = 1000
+  kafka_log_flush_scheduler_interval_ms = 1000
+  kafka_log_segment_bytes               = 104857600
+  kafka_log_preallocate                 = true
+  kafka_log_retention_bytes             = 1073741824
+  kafka_log_retention_hours             = 168
+  kafka_log_retention_minutes           = 10080
+  kafka_log_retention_ms                = 86400000
+  kafka_replica_fetch_max_bytes         = 1048576
+  kafka_ssl_cipher_suites               = ["TLS_DHE_RSA_WITH_AES_128_CBC_SHA", "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"]
+  kafka_offsets_retention_minutes       = 10080
+  kafka_num_partitions                  = 100
+  kafka_default_replication_factor      = 2
+  kafka_message_max_bytes               = 1048576
+  kafka_sasl_enabled_mechanisms         = ["SASL_MECHANISM_SCRAM_SHA_512"]
 
   # KRaft Resources (используется вместо ZooKeeper)
   kraft_resource_preset_id = "s2.micro"
