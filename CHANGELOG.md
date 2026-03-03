@@ -1,3 +1,7 @@
+## v2.11.0 - 2026-03-03
+### Chores
+- d62c2a6 chore(deps): bump hashicorp/setup-terraform from 3 to 4 ([#63](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/63))
+
 ## v2.10.0 - 2026-02-24
 ### Chores
 - 6eb8388 chore(deps): bump kvendingoldo/git-flow-action from 2.2.0 to 2.16.0 ([#62](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/62))
