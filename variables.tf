@@ -42,8 +42,8 @@ variable "kafka_version" {
   description = "Version of the Kafka server"
   type        = string
   validation {
-    condition     = contains(["3.6", "3.7", "3.8", "3.9"], var.kafka_version)
-    error_message = "The Kafka server version must be one of: 3.6, 3.7, 3.8, 3.9"
+    condition     = contains(["3.7", "3.8", "3.9", "4.0"], var.kafka_version)
+    error_message = "The Kafka server version must be one of: 3.7, 3.8, 3.9, 4.0"
   }
 }
 
@@ -206,7 +206,7 @@ variable "kraft_disk_size" {
   type        = number
   default     = null
   validation {
-    condition     = var.kraft_disk_size == null || var.kraft_disk_size >= 10
+    condition     = var.kraft_disk_size == null ? true : var.kraft_disk_size >= 10
     error_message = "KRaft disk size must be at least 10GB if specified"
   }
 }
@@ -238,10 +238,10 @@ variable "disk_size_autoscaling" {
   })
   default = null
   validation {
-    condition = var.disk_size_autoscaling == null || (
+    condition = var.disk_size_autoscaling == null ? true : (
       var.disk_size_autoscaling.disk_size_limit >= 10 &&
-      (var.disk_size_autoscaling.planned_usage_threshold == null || (var.disk_size_autoscaling.planned_usage_threshold >= 0 && var.disk_size_autoscaling.planned_usage_threshold <= 100)) &&
-      (var.disk_size_autoscaling.emergency_usage_threshold == null || (var.disk_size_autoscaling.emergency_usage_threshold >= 0 && var.disk_size_autoscaling.emergency_usage_threshold <= 100))
+      (var.disk_size_autoscaling.planned_usage_threshold == null ? true : var.disk_size_autoscaling.planned_usage_threshold >= 0 && var.disk_size_autoscaling.planned_usage_threshold <= 100) &&
+      (var.disk_size_autoscaling.emergency_usage_threshold == null ? true : var.disk_size_autoscaling.emergency_usage_threshold >= 0 && var.disk_size_autoscaling.emergency_usage_threshold <= 100)
     )
     error_message = "Disk size autoscaling validation failed: disk_size_limit must be >= 10GB, thresholds must be between 0 and 100"
   }
@@ -299,7 +299,7 @@ variable "maintenance_window_day" {
   type        = string
   default     = null
   validation {
-    condition     = var.maintenance_window_day == null || contains(["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"], var.maintenance_window_day)
+    condition     = var.maintenance_window_day == null ? true : contains(["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"], var.maintenance_window_day)
     error_message = "Maintenance window day must be one of: MON, TUE, WED, THU, FRI, SAT, SUN"
   }
 }
@@ -309,7 +309,7 @@ variable "maintenance_window_hour" {
   type        = number
   default     = null
   validation {
-    condition     = var.maintenance_window_hour == null || (var.maintenance_window_hour >= 0 && var.maintenance_window_hour <= 23)
+    condition     = var.maintenance_window_hour == null ? true : var.maintenance_window_hour >= 0 && var.maintenance_window_hour <= 23
     error_message = "Maintenance window hour must be between 0 and 23"
   }
 }
