@@ -1,3 +1,7 @@
+## v2.12.0 - 2026-03-11
+### Bug Fixes
+- 7bcc101 fix(variables): fix kafka versions + fix null checks with ternary operators ([#65](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/65))
+
 ## v2.11.0 - 2026-03-03
 ### Chores
 - d62c2a6 chore(deps): bump hashicorp/setup-terraform from 3 to 4 ([#63](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/63))
