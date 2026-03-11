@@ -42,7 +42,7 @@ variable "kafka_version" {
   description = "Version of the Kafka server"
   type        = string
   validation {
-    condition     = contains(["3.6", "3.7", "3.8", "3.9"], var.kafka_version)
+    condition     = contains(["3.7", "3.8", "3.9", "4.0"], var.kafka_version)
     error_message = "The Kafka server version must be one of: 3.6, 3.7, 3.8, 3.9"
   }
 }
