@@ -53,7 +53,7 @@ module "kafka" {
   environment = "PRODUCTION"
 
   # Kafka Version and Configuration
-  kafka_version = "3.6"
+  kafka_version = "3.7"
   brokers_count = 3
   zones = [
     "ru-central1-a",
@@ -62,6 +62,7 @@ module "kafka" {
   ]
   assign_public_ip = false
   schema_registry  = true
+  unmanaged_topics = true
 
   # Kafka Resources
   kafka_resource_preset_id              = "s2.micro"
@@ -116,19 +117,20 @@ module "kafka" {
       partitions         = 2
       replication_factor = 2
       config = {
-        cleanup_policy        = "CLEANUP_POLICY_DELETE"
-        compression_type      = "COMPRESSION_TYPE_PRODUCER"
-        delete_retention_ms   = 86400000
-        file_delete_delay_ms  = 60000
-        flush_messages        = 9223372036854775807
-        flush_ms              = 9223372036854775807
-        min_compaction_lag_ms = 0
-        retention_bytes       = -1
-        retention_ms          = 604800000
-        max_message_bytes     = 1048588
-        min_insync_replicas   = 1
-        segment_bytes         = 1073741824
-        preallocate           = true
+        cleanup_policy         = "CLEANUP_POLICY_DELETE"
+        compression_type       = "COMPRESSION_TYPE_PRODUCER"
+        delete_retention_ms    = 86400000
+        file_delete_delay_ms   = 60000
+        flush_messages         = 9223372036854775807
+        flush_ms               = 9223372036854775807
+        min_compaction_lag_ms  = 0
+        retention_bytes        = -1
+        retention_ms           = 604800000
+        max_message_bytes      = 1048588
+        min_insync_replicas    = 1
+        segment_bytes          = 1073741824
+        preallocate            = true
+        message_timestamp_type = "MESSAGE_TIMESTAMP_TYPE_CREATE_TIME"
       }
     },
     {
