@@ -1,3 +1,7 @@
+## v2.13.0 - 2026-03-15
+### Miscellaneous
+- 9c37020 added unmanaged_topics and message_timestamp_type ([#66](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/66))
+
 ## v2.12.0 - 2026-03-11
 ### Bug Fixes
 - 7bcc101 fix(variables): fix kafka versions + fix null checks with ternary operators ([#65](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/65))
