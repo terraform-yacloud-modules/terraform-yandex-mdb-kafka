@@ -1,3 +1,7 @@
+## v2.14.0 - 2026-03-25
+### Chores
+- 095ba17 chore(deps): bump actions/cache from 5.0.3 to 5.0.4 ([#67](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/67))
+
 ## v2.13.0 - 2026-03-15
 ### Miscellaneous
 - 9c37020 added unmanaged_topics and message_timestamp_type ([#66](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/66))
