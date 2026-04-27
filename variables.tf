@@ -74,11 +74,6 @@ variable "schema_registry" {
   default     = false
 }
 
-variable "unmanaged_topics" {
-  description = "Enables unmanaged topics (topics created via yandex_mdb_kafka_topic)"
-  type        = bool
-  default     = false
-}
 
 variable "kafka_resource_preset_id" {
   description = "The ID of the preset for computational resources available to a Kafka host"
@@ -153,11 +148,6 @@ variable "kafka_log_segment_bytes" {
   default     = null
 }
 
-variable "kafka_log_preallocate" {
-  description = "Should pre allocate file when create new segment?"
-  type        = bool
-  default     = false
-}
 
 variable "kafka_num_partitions" {
   description = "Kafka server number of partitions"
@@ -343,7 +333,6 @@ variable "topics" {
         - max_message_bytes     - (Optional) The largest record batch size allowed by Kafka.
         - min_insync_replicas   - (Optional) The minimum number of replicas that must acknowledge a write for the write to be considered successful.
         - segment_bytes         - (Optional) The maximum size of a single log file.
-        - preallocate           - (Optional) Whether to preallocate the file on disk.
         - message_timestamp_type - (Optional) Timestamp type. Allowed values: `MESSAGE_TIMESTAMP_TYPE_CREATE_TIME`, `MESSAGE_TIMESTAMP_TYPE_LOG_APPEND_TIME`.
   EOF
 
@@ -363,8 +352,7 @@ variable "topics" {
       retention_ms           = optional(number, 604800000)
       max_message_bytes      = optional(number, 1048588)
       min_insync_replicas    = optional(number, 1)
-      segment_bytes          = optional(number, 1073741824)
-      preallocate            = optional(bool, false)
+      segment_bytes          = optional(number)
       message_timestamp_type = optional(string, "MESSAGE_TIMESTAMP_TYPE_CREATE_TIME")
     }), null)
   }))
