@@ -13,7 +13,6 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
     zones            = var.zones
     assign_public_ip = var.assign_public_ip
     schema_registry  = var.schema_registry
-    unmanaged_topics = var.unmanaged_topics
 
     kafka {
       resources {
@@ -32,7 +31,6 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
         log_retention_minutes           = var.kafka_log_retention_minutes
         log_retention_ms                = var.kafka_log_retention_ms
         log_segment_bytes               = var.kafka_log_segment_bytes
-        log_preallocate                 = var.kafka_log_preallocate
         num_partitions                  = var.kafka_num_partitions
         default_replication_factor      = var.kafka_default_replication_factor
         message_max_bytes               = var.kafka_message_max_bytes
@@ -131,7 +129,6 @@ resource "yandex_mdb_kafka_topic" "kafka_topic" {
       max_message_bytes      = topic_config.value.max_message_bytes
       min_insync_replicas    = topic_config.value.min_insync_replicas
       segment_bytes          = topic_config.value.segment_bytes
-      preallocate            = topic_config.value.preallocate
       message_timestamp_type = topic_config.value.message_timestamp_type
     }
   }
