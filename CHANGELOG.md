@@ -1,3 +1,11 @@
+## v2.16.0 - 2026-04-27
+### Bug Fixes
+- b5314a5 fix: remove deprecated fields unmanaged_topics, log_preallocate, preallocate
+- 704449a fix: remove hardcoded default for topic segment_bytes
+
+### Miscellaneous
+- a46eb4b Merge pull request [#70](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/70) from sanchpet/main
+
 ## v2.15.0 - 2026-04-14
 ### Chores
 - d63d1b6 chore(deps): bump actions/cache from 5.0.4 to 5.0.5 ([#68](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/68))
