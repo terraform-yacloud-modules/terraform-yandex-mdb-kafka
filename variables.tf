@@ -363,7 +363,7 @@ variable "topics" {
       retention_ms           = optional(number, 604800000)
       max_message_bytes      = optional(number, 1048588)
       min_insync_replicas    = optional(number, 1)
-      segment_bytes          = optional(number, 1073741824)
+      segment_bytes          = optional(number)
       preallocate            = optional(bool, false)
       message_timestamp_type = optional(string, "MESSAGE_TIMESTAMP_TYPE_CREATE_TIME")
     }), null)
