@@ -1,3 +1,7 @@
+## v2.17.0 - 2026-06-23
+### Chores
+- 4f1ae8f chore(deps): bump actions/checkout from 6 to 7 ([#71](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/71))
+
 ## v2.16.0 - 2026-04-27
 ### Bug Fixes
 - b5314a5 fix: remove deprecated fields unmanaged_topics, log_preallocate, preallocate
