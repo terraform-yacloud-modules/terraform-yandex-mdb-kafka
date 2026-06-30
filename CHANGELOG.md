@@ -1,3 +1,7 @@
+## v2.18.0 - 2026-06-30
+### Chores
+- 07653db chore(deps): bump actions/cache from 5.0.5 to 6.1.0 ([#72](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/72))
+
 ## v2.17.0 - 2026-06-23
 ### Chores
 - 4f1ae8f chore(deps): bump actions/checkout from 6 to 7 ([#71](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/71))
