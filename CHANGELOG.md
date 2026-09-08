@@ -1,3 +1,7 @@
+## v2.25.0 - 2026-09-08
+### Chores
+- daac07f chore(deps): bump bridgecrewio/checkov-action ([#79](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/79))
+
 ## v2.24.0 - 2026-09-01
 ### Bug Fixes
 - e25e992 fix: передача folder_id в примере с приоритетом tfvars над YC_FOLDER_ID
