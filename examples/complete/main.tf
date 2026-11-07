@@ -6,7 +6,8 @@ provider "yandex" {
 module "iam_accounts" {
   source = "git::https://github.com/terraform-yacloud-modules/terraform-yandex-iam.git//modules/iam-account?ref=v1.0.0"
 
-  name = "iam"
+  name      = "kafka-example-iam"
+  folder_id = coalesce(var.folder_id, data.yandex_client_config.client.folder_id)
   folder_roles = [
     "admin",
   ]
@@ -27,9 +28,9 @@ module "network" {
     repo = "terraform-yacloud-modules/terraform-yandex-vpc"
   }
 
-  azs = ["ru-central1-a", "ru-central1-b", "ru-central1-d"]
+  azs = ["ru-central1-d"]
 
-  private_subnets = [["10.3.0.0/24"], ["10.4.0.0/24"], ["10.5.0.0/24"]]
+  private_subnets = [["10.3.0.0/24"]]
 
   create_vpc         = true
   create_nat_gateway = true
@@ -50,8 +51,6 @@ module "kafka" {
   network_id = module.network.vpc_id
   subnet_ids = [
     module.network.private_subnets_ids[0],
-    module.network.private_subnets_ids[1],
-    module.network.private_subnets_ids[2]
   ]
   environment = "PRODUCTION"
 
@@ -59,13 +58,10 @@ module "kafka" {
   kafka_version = "3.7"
   brokers_count = 3
   zones = [
-    "ru-central1-a",
-    "ru-central1-b",
-    "ru-central1-d"
+    "ru-central1-d",
   ]
   assign_public_ip = false
   schema_registry  = true
-  unmanaged_topics = true
 
   # Kafka Resources
   kafka_resource_preset_id              = "s2.micro"
@@ -76,7 +72,6 @@ module "kafka" {
   kafka_log_flush_interval_ms           = 1000
   kafka_log_flush_scheduler_interval_ms = 1000
   kafka_log_segment_bytes               = 104857600
-  kafka_log_preallocate                 = true
   kafka_log_retention_bytes             = 1073741824
   kafka_log_retention_hours             = 168
   kafka_log_retention_minutes           = 10080
@@ -89,10 +84,9 @@ module "kafka" {
   kafka_message_max_bytes               = 1048576
   kafka_sasl_enabled_mechanisms         = ["SASL_MECHANISM_SCRAM_SHA_512"]
 
-  # KRaft Resources (используется вместо ZooKeeper)
-  kraft_resource_preset_id = "s2.micro"
-  kraft_disk_size          = 100
-  kraft_disk_type_id       = "network-ssd"
+  # KRaft-combine quorum: controllers run on the broker hosts, so no
+  # dedicated KRaft subcluster is created. A dedicated one requires
+  # controller zones, which do not exist in a single-zone deployment.
 
   # Access and Security
   security_group_ids      = []
@@ -132,7 +126,6 @@ module "kafka" {
         max_message_bytes      = 1048588
         min_insync_replicas    = 1
         segment_bytes          = 1073741824
-        preallocate            = true
         message_timestamp_type = "MESSAGE_TIMESTAMP_TYPE_CREATE_TIME"
       }
     },
