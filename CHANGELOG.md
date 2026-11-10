@@ -1,3 +1,7 @@
+## v2.32.0 - 2026-11-10
+### Bug Fixes
+- a6ea97c fix(examples): make complete example deployable again ([#86](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/86))
+
 ## v2.31.0 - 2026-11-07
 ### Chores
 - 5056763 chore(deps): bump bridgecrewio/checkov-action ([#85](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/85))
