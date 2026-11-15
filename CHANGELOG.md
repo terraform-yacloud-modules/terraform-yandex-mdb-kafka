@@ -1,3 +1,7 @@
+## v2.34.0 - 2026-11-15
+### Features
+- ee31c35 feat: add Kafka connector support and missing kafka_config settings ([#88](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/88))
+
 ## v2.33.0 - 2026-11-14
 ### Chores
 - c4d728f chore(deps): bump bridgecrewio/checkov-action ([#87](https://github.com/terraform-yacloud-modules/terraform-yandex-mdb-kafka/pull/87))
