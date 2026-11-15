@@ -3,6 +3,11 @@ data "yandex_client_config" "client" {}
 provider "yandex" {
 }
 
+locals {
+  folder_id   = coalesce(var.folder_id, data.yandex_client_config.client.folder_id)
+  bucket_name = "kafka-s3-sink-${local.folder_id}"
+}
+
 module "iam_accounts" {
   source = "git::https://github.com/terraform-yacloud-modules/terraform-yandex-iam.git//modules/iam-account?ref=v1.0.0"
 
@@ -36,6 +41,30 @@ module "network" {
   create_nat_gateway = true
 }
 
+# Service account and bucket used by the Kafka S3 Sink connector example.
+resource "yandex_iam_service_account" "kafka_s3_sink" {
+  name      = "kafka-example-s3-sink"
+  folder_id = local.folder_id
+}
+
+resource "yandex_storage_bucket" "kafka_s3_sink" {
+  bucket        = local.bucket_name
+  folder_id     = local.folder_id
+  force_destroy = true
+}
+
+resource "yandex_storage_bucket_iam_binding" "kafka_s3_sink" {
+  bucket  = yandex_storage_bucket.kafka_s3_sink.bucket
+  role    = "storage.editor"
+  members = ["serviceAccount:${yandex_iam_service_account.kafka_s3_sink.id}"]
+}
+
+resource "yandex_iam_service_account_static_access_key" "kafka_s3_sink" {
+  service_account_id = yandex_iam_service_account.kafka_s3_sink.id
+  description        = "Static key for the Kafka S3 Sink connector example"
+
+  depends_on = [yandex_storage_bucket_iam_binding.kafka_s3_sink]
+}
 
 module "kafka" {
   source = "../../"
@@ -68,9 +97,11 @@ module "kafka" {
   kafka_disk_size                       = 100
   kafka_disk_type_id                    = "network-ssd"
   kafka_compression_type                = "COMPRESSION_TYPE_GZIP"
+  kafka_auto_create_topics_enable       = true
   kafka_log_flush_interval_messages     = 1000
   kafka_log_flush_interval_ms           = 1000
   kafka_log_flush_scheduler_interval_ms = 1000
+  kafka_log_message_timestamp_type      = "MESSAGE_TIMESTAMP_TYPE_CREATE_TIME"
   kafka_log_segment_bytes               = 104857600
   kafka_log_retention_bytes             = 1073741824
   kafka_log_retention_hours             = 168
@@ -83,6 +114,9 @@ module "kafka" {
   kafka_default_replication_factor      = 2
   kafka_message_max_bytes               = 1048576
   kafka_sasl_enabled_mechanisms         = ["SASL_MECHANISM_SCRAM_SHA_512"]
+  kafka_socket_receive_buffer_bytes     = 1048576
+  kafka_socket_send_buffer_bytes        = 1048576
+  kafka_transactional_id_expiration_ms  = 604800000
 
   # KRaft-combine quorum: controllers run on the broker hosts, so no
   # dedicated KRaft subcluster is created. A dedicated one requires
@@ -169,6 +203,35 @@ module "kafka" {
         }
       ]
     }
+  ]
+
+  # Kafka connectors
+  connectors = [
+    {
+      name      = "s3-sink"
+      tasks_max = 1
+      properties = {
+        "key.converter"                  = "org.apache.kafka.connect.storage.StringConverter"
+        "value.converter"                = "org.apache.kafka.connect.json.JsonConverter"
+        "value.converter.schemas.enable" = "false"
+        "format.output.type"             = "jsonl"
+        "file.name.template"             = "{{topic}}-{{partition:padding=true}}-{{start_offset:padding=true}}.gz"
+        "timestamp.timezone"             = "Europe/Moscow"
+      }
+      s3_sink = {
+        topics                = "topic1"
+        file_compression_type = "gzip"
+        file_max_records      = 100
+        s3_connection = {
+          bucket_name = yandex_storage_bucket.kafka_s3_sink.bucket
+          external_s3 = {
+            endpoint          = "storage.yandexcloud.net"
+            access_key_id     = yandex_iam_service_account_static_access_key.kafka_s3_sink.access_key
+            secret_access_key = yandex_iam_service_account_static_access_key.kafka_s3_sink.secret_key
+          }
+        }
+      }
+    },
   ]
 
   depends_on = [module.iam_accounts, module.network]

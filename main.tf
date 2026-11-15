@@ -1,11 +1,12 @@
 resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
-  name        = var.cluster_name
-  description = var.cluster_description
-  folder_id   = var.folder_id
-  labels      = var.labels
-  network_id  = var.network_id
-  subnet_ids  = var.subnet_ids
-  environment = var.environment
+  name                   = var.cluster_name
+  description            = var.cluster_description
+  folder_id              = var.folder_id
+  labels                 = var.labels
+  network_id             = var.network_id
+  subnet_ids             = var.subnet_ids
+  environment            = var.environment
+  disk_encryption_key_id = var.disk_encryption_key_id
 
   config {
     version          = var.kafka_version
@@ -22,10 +23,12 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
       }
 
       kafka_config {
+        auto_create_topics_enable       = var.kafka_auto_create_topics_enable
         compression_type                = var.kafka_compression_type
         log_flush_interval_messages     = var.kafka_log_flush_interval_messages
         log_flush_interval_ms           = var.kafka_log_flush_interval_ms
         log_flush_scheduler_interval_ms = var.kafka_log_flush_scheduler_interval_ms
+        log_message_timestamp_type      = var.kafka_log_message_timestamp_type
         log_retention_bytes             = var.kafka_log_retention_bytes
         log_retention_hours             = var.kafka_log_retention_hours
         log_retention_minutes           = var.kafka_log_retention_minutes
@@ -38,6 +41,9 @@ resource "yandex_mdb_kafka_cluster" "kafka_cluster" {
         ssl_cipher_suites               = var.kafka_ssl_cipher_suites
         offsets_retention_minutes       = var.kafka_offsets_retention_minutes
         sasl_enabled_mechanisms         = var.kafka_sasl_enabled_mechanisms
+        socket_receive_buffer_bytes     = var.kafka_socket_receive_buffer_bytes
+        socket_send_buffer_bytes        = var.kafka_socket_send_buffer_bytes
+        transactional_id_expiration_ms  = var.kafka_transactional_id_expiration_ms
       }
     }
 
@@ -171,4 +177,92 @@ resource "yandex_mdb_kafka_user" "kafka_user" {
   }
 
   depends_on = [yandex_mdb_kafka_topic.kafka_topic]
+}
+
+resource "yandex_mdb_kafka_connector" "connector" {
+  for_each = { for connector in var.connectors : connector.name => connector }
+
+  cluster_id = yandex_mdb_kafka_cluster.kafka_cluster.id
+  name       = each.value.name
+  tasks_max  = each.value.tasks_max
+  properties = each.value.properties
+
+  dynamic "connector_config_mirrormaker" {
+    for_each = each.value.mirrormaker == null ? [] : [each.value.mirrormaker]
+    content {
+      topics             = connector_config_mirrormaker.value.topics
+      replication_factor = connector_config_mirrormaker.value.replication_factor
+
+      dynamic "source_cluster" {
+        for_each = [connector_config_mirrormaker.value.source_cluster]
+        content {
+          alias = source_cluster.value.alias
+
+          dynamic "this_cluster" {
+            for_each = source_cluster.value.this_cluster ? [1] : []
+            content {}
+          }
+
+          dynamic "external_cluster" {
+            for_each = source_cluster.value.external_cluster == null ? [] : [source_cluster.value.external_cluster]
+            content {
+              bootstrap_servers = external_cluster.value.bootstrap_servers
+              sasl_mechanism    = external_cluster.value.sasl_mechanism
+              sasl_username     = external_cluster.value.sasl_username
+              sasl_password     = external_cluster.value.sasl_password
+              security_protocol = external_cluster.value.security_protocol
+            }
+          }
+        }
+      }
+
+      dynamic "target_cluster" {
+        for_each = [connector_config_mirrormaker.value.target_cluster]
+        content {
+          alias = target_cluster.value.alias
+
+          dynamic "this_cluster" {
+            for_each = target_cluster.value.this_cluster ? [1] : []
+            content {}
+          }
+
+          dynamic "external_cluster" {
+            for_each = target_cluster.value.external_cluster == null ? [] : [target_cluster.value.external_cluster]
+            content {
+              bootstrap_servers = external_cluster.value.bootstrap_servers
+              sasl_mechanism    = external_cluster.value.sasl_mechanism
+              sasl_username     = external_cluster.value.sasl_username
+              sasl_password     = external_cluster.value.sasl_password
+              security_protocol = external_cluster.value.security_protocol
+            }
+          }
+        }
+      }
+    }
+  }
+
+  dynamic "connector_config_s3_sink" {
+    for_each = each.value.s3_sink == null ? [] : [each.value.s3_sink]
+    content {
+      topics                = connector_config_s3_sink.value.topics
+      file_compression_type = connector_config_s3_sink.value.file_compression_type
+      file_max_records      = connector_config_s3_sink.value.file_max_records
+
+      s3_connection {
+        bucket_name = connector_config_s3_sink.value.s3_connection.bucket_name
+
+        external_s3 {
+          endpoint          = connector_config_s3_sink.value.s3_connection.external_s3.endpoint
+          access_key_id     = connector_config_s3_sink.value.s3_connection.external_s3.access_key_id
+          secret_access_key = connector_config_s3_sink.value.s3_connection.external_s3.secret_access_key
+          region            = connector_config_s3_sink.value.s3_connection.external_s3.region
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    yandex_mdb_kafka_topic.kafka_topic,
+    yandex_mdb_kafka_user.kafka_user,
+  ]
 }

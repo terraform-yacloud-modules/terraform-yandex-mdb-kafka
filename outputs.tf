@@ -22,3 +22,8 @@ output "kafka_user_ids" {
   description = "IDs of the Kafka users"
   value       = [for user in yandex_mdb_kafka_user.kafka_user : user.id]
 }
+
+output "kafka_connector_ids" {
+  description = "IDs of the Kafka connectors"
+  value       = { for name, connector in yandex_mdb_kafka_connector.connector : name => connector.id }
+}

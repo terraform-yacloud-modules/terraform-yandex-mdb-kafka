@@ -21,6 +21,12 @@ variable "labels" {
   default     = {}
 }
 
+variable "disk_encryption_key_id" {
+  description = "ID of the KMS key used to encrypt the Kafka cluster disks"
+  type        = string
+  default     = null
+}
+
 variable "network_id" {
   description = "ID of the network, to which the Kafka cluster belongs"
   type        = string
@@ -94,6 +100,12 @@ variable "kafka_disk_type_id" {
   type        = string
 }
 
+variable "kafka_auto_create_topics_enable" {
+  description = "Enable auto creation of topics on the Kafka server"
+  type        = bool
+  default     = null
+}
+
 variable "kafka_compression_type" {
   description = "Kafka server compression type"
   type        = string
@@ -115,6 +127,12 @@ variable "kafka_log_flush_interval_ms" {
 variable "kafka_log_flush_scheduler_interval_ms" {
   description = "Kafka server log flush scheduler interval milliseconds"
   type        = number
+  default     = null
+}
+
+variable "kafka_log_message_timestamp_type" {
+  description = "Kafka server log message timestamp type"
+  type        = string
   default     = null
 }
 
@@ -188,6 +206,24 @@ variable "kafka_offsets_retention_minutes" {
 variable "kafka_sasl_enabled_mechanisms" {
   description = "Kafka server SASL enabled mechanisms"
   type        = list(string)
+  default     = null
+}
+
+variable "kafka_socket_receive_buffer_bytes" {
+  description = "Kafka server socket receive buffer size in bytes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_socket_send_buffer_bytes" {
+  description = "Kafka server socket send buffer size in bytes"
+  type        = number
+  default     = null
+}
+
+variable "kafka_transactional_id_expiration_ms" {
+  description = "Kafka server transactional ID expiration time in milliseconds"
+  type        = number
   default     = null
 }
 
@@ -382,4 +418,112 @@ variable "timeouts" {
     delete = optional(string, "30m")
   })
   default = null
+}
+
+variable "connectors" {
+  description = <<EOF
+    (Optional) List of Kafka connectors to create.
+
+    Each connector requires:
+      - name       - The name of the connector.
+      - tasks_max  - (Optional) The number of the connector's parallel working tasks.
+      - properties - (Optional) Additional properties for the connector.
+
+    Exactly one of the following configuration blocks is required:
+      - mirrormaker - MirrorMaker 2 settings:
+        - topics             - The pattern for topic names to be replicated.
+        - replication_factor - Replication factor for topics created in the target cluster.
+        - source_cluster     - Source cluster settings.
+        - target_cluster     - Target cluster settings.
+      - s3_sink - S3 Sink settings:
+        - topics                - The pattern for topic names to be copied to the bucket.
+        - file_compression_type - Compression type for messages.
+        - file_max_records      - (Optional) Max records per file.
+        - s3_connection         - S3 connection settings.
+
+    Cluster settings in mirrormaker (`source_cluster`, `target_cluster`):
+      - alias            - (Optional) Cluster alias used as a topic prefix.
+      - this_cluster     - (Optional) Set to `true` to use this cluster.
+      - external_cluster - (Optional) External cluster connection settings:
+        - bootstrap_servers - List of bootstrap servers.
+        - sasl_mechanism    - (Optional) SASL authentication mechanism.
+        - sasl_username     - (Optional) SASL username.
+        - sasl_password     - (Optional) SASL password.
+        - security_protocol - (Optional) Security protocol.
+
+    S3 connection settings in s3_sink (`s3_connection`):
+      - bucket_name - Name of the bucket.
+      - external_s3 - External S3-compatible storage settings:
+        - endpoint          - Storage endpoint.
+        - access_key_id     - (Optional) Static access key ID.
+        - secret_access_key - (Optional) Static secret access key.
+        - region            - (Optional) Storage region.
+  EOF
+  type = list(object({
+    name       = string
+    tasks_max  = optional(number)
+    properties = optional(map(string))
+
+    mirrormaker = optional(object({
+      topics             = string
+      replication_factor = number
+      source_cluster = object({
+        alias        = optional(string)
+        this_cluster = optional(bool, false)
+        external_cluster = optional(object({
+          bootstrap_servers = string
+          sasl_mechanism    = optional(string)
+          sasl_username     = optional(string)
+          sasl_password     = optional(string)
+          security_protocol = optional(string)
+        }))
+      })
+      target_cluster = object({
+        alias        = optional(string)
+        this_cluster = optional(bool, false)
+        external_cluster = optional(object({
+          bootstrap_servers = string
+          sasl_mechanism    = optional(string)
+          sasl_username     = optional(string)
+          sasl_password     = optional(string)
+          security_protocol = optional(string)
+        }))
+      })
+    }))
+
+    s3_sink = optional(object({
+      topics                = string
+      file_compression_type = string
+      file_max_records      = optional(number)
+      s3_connection = object({
+        bucket_name = string
+        external_s3 = object({
+          endpoint          = string
+          access_key_id     = optional(string)
+          secret_access_key = optional(string)
+          region            = optional(string)
+        })
+      })
+    }))
+  }))
+  default = []
+
+  validation {
+    condition = alltrue([
+      for connector in var.connectors :
+      (connector.mirrormaker == null ? 0 : 1) + (connector.s3_sink == null ? 0 : 1) == 1
+    ])
+    error_message = "Each connector must define exactly one of mirrormaker or s3_sink"
+  }
+
+  validation {
+    condition = alltrue([
+      for connector in var.connectors :
+      connector.mirrormaker == null ? true : alltrue([
+        for cluster in [connector.mirrormaker.source_cluster, connector.mirrormaker.target_cluster] :
+        (cluster.this_cluster ? 1 : 0) + (cluster.external_cluster == null ? 0 : 1) == 1
+      ])
+    ])
+    error_message = "Each MirrorMaker cluster must define exactly one of this_cluster = true or external_cluster"
+  }
 }

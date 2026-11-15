@@ -16,13 +16,13 @@ maintainers to test your changes and to keep the examples up to date for users. 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_yandex"></a> [yandex](#requirement\_yandex) | >= 0.72.0 |
+| <a name="requirement_yandex"></a> [yandex](#requirement\_yandex) | >= 0.220.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_yandex"></a> [yandex](#provider\_yandex) | >= 0.72.0 |
+| <a name="provider_yandex"></a> [yandex](#provider\_yandex) | >= 0.220.0 |
 
 ## Modules
 
@@ -33,6 +33,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [yandex_mdb_kafka_cluster.kafka_cluster](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/mdb_kafka_cluster) | resource |
+| [yandex_mdb_kafka_connector.connector](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/mdb_kafka_connector) | resource |
 | [yandex_mdb_kafka_topic.kafka_topic](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/mdb_kafka_topic) | resource |
 | [yandex_mdb_kafka_user.kafka_user](https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/mdb_kafka_user) | resource |
 
@@ -44,12 +45,15 @@ No modules.
 | <a name="input_brokers_count"></a> [brokers\_count](#input\_brokers\_count) | Count of brokers per availability zone | `number` | `1` | no |
 | <a name="input_cluster_description"></a> [cluster\_description](#input\_cluster\_description) | Description of the Kafka cluster | `string` | `""` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the Kafka cluster | `string` | n/a | yes |
+| <a name="input_connectors"></a> [connectors](#input\_connectors) | (Optional) List of Kafka connectors to create.<br/><br/>    Each connector requires:<br/>      - name       - The name of the connector.<br/>      - tasks\_max  - (Optional) The number of the connector's parallel working tasks.<br/>      - properties - (Optional) Additional properties for the connector.<br/><br/>    Exactly one of the following configuration blocks is required:<br/>      - mirrormaker - MirrorMaker 2 settings:<br/>        - topics             - The pattern for topic names to be replicated.<br/>        - replication\_factor - Replication factor for topics created in the target cluster.<br/>        - source\_cluster     - Source cluster settings.<br/>        - target\_cluster     - Target cluster settings.<br/>      - s3\_sink - S3 Sink settings:<br/>        - topics                - The pattern for topic names to be copied to the bucket.<br/>        - file\_compression\_type - Compression type for messages.<br/>        - file\_max\_records      - (Optional) Max records per file.<br/>        - s3\_connection         - S3 connection settings.<br/><br/>    Cluster settings in mirrormaker (`source_cluster`, `target_cluster`):<br/>      - alias            - (Optional) Cluster alias used as a topic prefix.<br/>      - this\_cluster     - (Optional) Set to `true` to use this cluster.<br/>      - external\_cluster - (Optional) External cluster connection settings:<br/>        - bootstrap\_servers - List of bootstrap servers.<br/>        - sasl\_mechanism    - (Optional) SASL authentication mechanism.<br/>        - sasl\_username     - (Optional) SASL username.<br/>        - sasl\_password     - (Optional) SASL password.<br/>        - security\_protocol - (Optional) Security protocol.<br/><br/>    S3 connection settings in s3\_sink (`s3_connection`):<br/>      - bucket\_name - Name of the bucket.<br/>      - external\_s3 - External S3-compatible storage settings:<br/>        - endpoint          - Storage endpoint.<br/>        - access\_key\_id     - (Optional) Static access key ID.<br/>        - secret\_access\_key - (Optional) Static secret access key.<br/>        - region            - (Optional) Storage region. | <pre>list(object({<br/>    name       = string<br/>    tasks_max  = optional(number)<br/>    properties = optional(map(string))<br/><br/>    mirrormaker = optional(object({<br/>      topics             = string<br/>      replication_factor = number<br/>      source_cluster = object({<br/>        alias        = optional(string)<br/>        this_cluster = optional(bool, false)<br/>        external_cluster = optional(object({<br/>          bootstrap_servers = string<br/>          sasl_mechanism    = optional(string)<br/>          sasl_username     = optional(string)<br/>          sasl_password     = optional(string)<br/>          security_protocol = optional(string)<br/>        }))<br/>      })<br/>      target_cluster = object({<br/>        alias        = optional(string)<br/>        this_cluster = optional(bool, false)<br/>        external_cluster = optional(object({<br/>          bootstrap_servers = string<br/>          sasl_mechanism    = optional(string)<br/>          sasl_username     = optional(string)<br/>          sasl_password     = optional(string)<br/>          security_protocol = optional(string)<br/>        }))<br/>      })<br/>    }))<br/><br/>    s3_sink = optional(object({<br/>      topics                = string<br/>      file_compression_type = string<br/>      file_max_records      = optional(number)<br/>      s3_connection = object({<br/>        bucket_name = string<br/>        external_s3 = object({<br/>          endpoint          = string<br/>          access_key_id     = optional(string)<br/>          secret_access_key = optional(string)<br/>          region            = optional(string)<br/>        })<br/>      })<br/>    }))<br/>  }))</pre> | `[]` | no |
 | <a name="input_data_transfer_access"></a> [data\_transfer\_access](#input\_data\_transfer\_access) | Allow access for DataTransfer | `bool` | `false` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Inhibits deletion of the cluster | `bool` | `false` | no |
+| <a name="input_disk_encryption_key_id"></a> [disk\_encryption\_key\_id](#input\_disk\_encryption\_key\_id) | ID of the KMS key used to encrypt the Kafka cluster disks | `string` | `null` | no |
 | <a name="input_disk_size_autoscaling"></a> [disk\_size\_autoscaling](#input\_disk\_size\_autoscaling) | Disk size autoscaling configuration | <pre>object({<br/>    disk_size_limit           = number<br/>    planned_usage_threshold   = optional(number)<br/>    emergency_usage_threshold = optional(number)<br/>  })</pre> | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Deployment environment of the Kafka cluster | `string` | `"PRODUCTION"` | no |
 | <a name="input_folder_id"></a> [folder\_id](#input\_folder\_id) | The ID of the folder that the resource belongs to | `string` | `null` | no |
 | <a name="input_host_group_ids"></a> [host\_group\_ids](#input\_host\_group\_ids) | A list of IDs of the host groups to place VMs of the cluster on | `list(string)` | `[]` | no |
+| <a name="input_kafka_auto_create_topics_enable"></a> [kafka\_auto\_create\_topics\_enable](#input\_kafka\_auto\_create\_topics\_enable) | Enable auto creation of topics on the Kafka server | `bool` | `null` | no |
 | <a name="input_kafka_compression_type"></a> [kafka\_compression\_type](#input\_kafka\_compression\_type) | Kafka server compression type | `string` | `null` | no |
 | <a name="input_kafka_default_replication_factor"></a> [kafka\_default\_replication\_factor](#input\_kafka\_default\_replication\_factor) | Kafka server default replication factor | `number` | `null` | no |
 | <a name="input_kafka_disk_size"></a> [kafka\_disk\_size](#input\_kafka\_disk\_size) | Volume of the storage available to a Kafka host, in gigabytes | `number` | n/a | yes |
@@ -57,6 +61,7 @@ No modules.
 | <a name="input_kafka_log_flush_interval_messages"></a> [kafka\_log\_flush\_interval\_messages](#input\_kafka\_log\_flush\_interval\_messages) | Kafka server log flush interval messages | `number` | `null` | no |
 | <a name="input_kafka_log_flush_interval_ms"></a> [kafka\_log\_flush\_interval\_ms](#input\_kafka\_log\_flush\_interval\_ms) | Kafka server log flush interval milliseconds | `number` | `null` | no |
 | <a name="input_kafka_log_flush_scheduler_interval_ms"></a> [kafka\_log\_flush\_scheduler\_interval\_ms](#input\_kafka\_log\_flush\_scheduler\_interval\_ms) | Kafka server log flush scheduler interval milliseconds | `number` | `null` | no |
+| <a name="input_kafka_log_message_timestamp_type"></a> [kafka\_log\_message\_timestamp\_type](#input\_kafka\_log\_message\_timestamp\_type) | Kafka server log message timestamp type | `string` | `null` | no |
 | <a name="input_kafka_log_retention_bytes"></a> [kafka\_log\_retention\_bytes](#input\_kafka\_log\_retention\_bytes) | Kafka server log retention bytes | `number` | `null` | no |
 | <a name="input_kafka_log_retention_hours"></a> [kafka\_log\_retention\_hours](#input\_kafka\_log\_retention\_hours) | Kafka server log retention hours | `number` | `null` | no |
 | <a name="input_kafka_log_retention_minutes"></a> [kafka\_log\_retention\_minutes](#input\_kafka\_log\_retention\_minutes) | Kafka server log retention minutes | `number` | `null` | no |
@@ -68,7 +73,10 @@ No modules.
 | <a name="input_kafka_replica_fetch_max_bytes"></a> [kafka\_replica\_fetch\_max\_bytes](#input\_kafka\_replica\_fetch\_max\_bytes) | Kafka server replica fetch max bytes | `number` | `null` | no |
 | <a name="input_kafka_resource_preset_id"></a> [kafka\_resource\_preset\_id](#input\_kafka\_resource\_preset\_id) | The ID of the preset for computational resources available to a Kafka host | `string` | n/a | yes |
 | <a name="input_kafka_sasl_enabled_mechanisms"></a> [kafka\_sasl\_enabled\_mechanisms](#input\_kafka\_sasl\_enabled\_mechanisms) | Kafka server SASL enabled mechanisms | `list(string)` | `null` | no |
+| <a name="input_kafka_socket_receive_buffer_bytes"></a> [kafka\_socket\_receive\_buffer\_bytes](#input\_kafka\_socket\_receive\_buffer\_bytes) | Kafka server socket receive buffer size in bytes | `number` | `null` | no |
+| <a name="input_kafka_socket_send_buffer_bytes"></a> [kafka\_socket\_send\_buffer\_bytes](#input\_kafka\_socket\_send\_buffer\_bytes) | Kafka server socket send buffer size in bytes | `number` | `null` | no |
 | <a name="input_kafka_ssl_cipher_suites"></a> [kafka\_ssl\_cipher\_suites](#input\_kafka\_ssl\_cipher\_suites) | Kafka server SSL cipher suites | `list(string)` | `null` | no |
+| <a name="input_kafka_transactional_id_expiration_ms"></a> [kafka\_transactional\_id\_expiration\_ms](#input\_kafka\_transactional\_id\_expiration\_ms) | Kafka server transactional ID expiration time in milliseconds | `number` | `null` | no |
 | <a name="input_kafka_ui_enabled"></a> [kafka\_ui\_enabled](#input\_kafka\_ui\_enabled) | Enable Kafka UI for cluster | `bool` | `false` | no |
 | <a name="input_kafka_version"></a> [kafka\_version](#input\_kafka\_version) | Version of the Kafka server | `string` | n/a | yes |
 | <a name="input_kraft_disk_size"></a> [kraft\_disk\_size](#input\_kraft\_disk\_size) | Volume of the storage available to a KRaft host, in gigabytes | `number` | `null` | no |
@@ -98,6 +106,7 @@ No modules.
 | <a name="output_created_at"></a> [created\_at](#output\_created\_at) | Timestamp of cluster creation |
 | <a name="output_hosts"></a> [hosts](#output\_hosts) | A host of the Kafka cluster |
 | <a name="output_kafka_cluster_id"></a> [kafka\_cluster\_id](#output\_kafka\_cluster\_id) | ID of the Kafka cluster |
+| <a name="output_kafka_connector_ids"></a> [kafka\_connector\_ids](#output\_kafka\_connector\_ids) | IDs of the Kafka connectors |
 | <a name="output_kafka_topic_ids"></a> [kafka\_topic\_ids](#output\_kafka\_topic\_ids) | IDs of the Kafka topics |
 | <a name="output_kafka_user_ids"></a> [kafka\_user\_ids](#output\_kafka\_user\_ids) | IDs of the Kafka users |
 <!-- END_TF_DOCS -->
